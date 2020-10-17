@@ -2,6 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import { Route, BrowserRouter as Router } from "react-router-dom";
+import LoginComponent from './login';
+import SignupComponent from './signup';
+import DashboardComponent from './dashboard';
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -17,10 +21,18 @@ firebase.initializeApp({
   measurementId: process.env.FIREBASE_MEASUREMENT_ID
 });
 
+const routing = (
+  <Router>
+    <div id="routing container">
+      <Route path="/login" component={LoginComponent}></Route>
+      <Route path="/signup" component={SignupComponent}></Route>
+      <Route path="/dashboard" component={DashboardComponent}></Route>
+    </div>
+  </Router>
+)
+
 ReactDOM.render(
-  <React.StrictMode>
-    <div>Hello World</div>
-  </React.StrictMode>,
+  routing,
   document.getElementById('root')
 );
 
