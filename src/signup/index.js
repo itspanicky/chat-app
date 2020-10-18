@@ -78,7 +78,7 @@ class SignupComponent extends React.Component {
             </Typography> :
             null
           }
-
+          <br></br>
           <Typography component="h5" variant="h6" className={classes.hasAccountHeader}>
             Already Have An Account?
           </Typography>
@@ -135,11 +135,11 @@ class SignupComponent extends React.Component {
             this.props.history.push("/dashboard");
           }, dbError => {
             console.log(dbError);
-            this.setState({ signupError: "Failed to add user." });
+            this.setState({ signupError: dbError.message });
           })
       }, authError => {
         console.log(authError);
-        this.setState({ signupError: "Failed to add user." });
+        this.setState({ signupError: authError.message });
       })
   }
 };
