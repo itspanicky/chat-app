@@ -93,7 +93,16 @@ class LoginComponent extends React.Component {
 
   submitLogIn = (e) => {
     e.preventDefault();
-    console.log("Submitting!")
+
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
+        this.props.history.push("/dashboard");
+      }, error => {
+        console.log(error);
+        this.setState({ loginError: "Incorrect Login Information" })
+      })
   }
 };
 
