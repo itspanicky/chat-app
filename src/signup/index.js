@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import styles from "./styles";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
@@ -8,12 +9,10 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import styles from "./styles";
 
 const firebase = require("firebase");
 
 class SignupComponent extends React.Component {
-
   constructor() {
     super();
     this.state = {
@@ -30,9 +29,7 @@ class SignupComponent extends React.Component {
 
     return (
       <main className={classes.main}>
-        <CssBaseline>
-
-        </CssBaseline>
+        <CssBaseline />
         <Paper className={classes.paper}>
           <Typography component="h1" variant="h5">Sign Up!</Typography>
           <form onSubmit={(e) => this.submitSignUp(e)} className={classes.form}>
@@ -78,6 +75,7 @@ class SignupComponent extends React.Component {
             </Typography> :
             null
           }
+          
           <br></br>
           <Typography component="h5" variant="h6" className={classes.hasAccountHeader}>
             Already Have An Account?
