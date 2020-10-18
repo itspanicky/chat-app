@@ -14,9 +14,19 @@ const firebase = require("firebase");
 
 class SignupComponent extends React.Component {
 
+  constructor() {
+    super();
+    this.state = {
+      email: null,
+      password: null,
+      passwordConfirmation: null,
+      signupError: ""
+    }
+  }
 
   render() {
     const { classes } = this.props;
+    const { signupError } = this.state;
 
     return (
       <main className={classes.main}>
@@ -25,7 +35,7 @@ class SignupComponent extends React.Component {
         </CssBaseline>
         <Paper className={classes.paper}>
           <Typography component="h1" variant="h5">Sign Up!</Typography>
-          <form onSubmit={(e) => this.submitSignUp} className={classes.form}>
+          <form onSubmit={(e) => this.submitSignUp(e)} className={classes.form}>
             <FormControl required fullWidth margin="normal">
               <InputLabel htmlFor="signup-email-input">
                 Enter Your Email
@@ -61,6 +71,14 @@ class SignupComponent extends React.Component {
               Submit
             </Button>
           </form>
+
+          {signupError ? 
+            <Typography compoent="h5" variant="h6" className={classes.errorText}>
+              {signupError}
+            </Typography> :
+            null
+          }
+
           <Typography component="h5" variant="h6" className={classes.hasAccountHeader}>
             Already Have An Account?
           </Typography>
@@ -70,12 +88,59 @@ class SignupComponent extends React.Component {
     )
   }
 
-  userTyping(type, e) {
+  userTyping = (type, e) => {
     console.log(type, e);
+    switch (type) {
+      case "email":
+        this.setState({ email: e.target.value  });
+        break;
+
+      case "password":
+        this.setState({ password: e.target.value });
+        break;
+
+      case "passwordConfirmation":
+        this.setState({ passwordConfirmation: e.target.value });
+        break;
+
+      default:
+        break;
+    }
   }
 
-  submitSignUp(e) {
-    console.log("Submitting");
+  formIsValid = () => this.state.password === this.state.passwordConfirmation;
+
+  submitSignUp = (e) => {
+    e.preventDefault();
+    console.log("Submitting", this.state);
+
+    if (!this.formIsValid()) {
+      this.setState({ signupError: "Passwords do not match! "});
+      return;
+    }
+
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(authRes => {
+        const userObj = {
+          email: authRes.user.email
+        };
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(this.state.email)
+          .set(userObj)
+          .then(() => {
+            this.props.history.push("/dashboard");
+          }, dbError => {
+            console.log(dbError);
+            this.setState({ signupError: "Failed to add user." });
+          })
+      }, authError => {
+        console.log(authError);
+        this.setState({ signupError: "Failed to add user." });
+      })
   }
 };
 
