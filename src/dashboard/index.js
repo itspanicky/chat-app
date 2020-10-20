@@ -20,7 +20,6 @@ class DashboardComponent extends React.Component {
 
     return (
       <>
-        <div>Dashboard Component</div>
         <ChatListComponent 
           history={this.props.history} 
           newChatBtnFn={this.newChatBtnClicked}
