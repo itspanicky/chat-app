@@ -128,6 +128,7 @@ class DashboardComponent extends React.Component {
       })
 
     this.setState({ newChatFormVisible: false });
+    console.log("this.state.chats");
     this.selectChat(this.state.chats.length - 1);
   }
 
