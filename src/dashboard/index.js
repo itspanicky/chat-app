@@ -2,6 +2,7 @@ import React from "react";
 import ChatListComponent from "../chatList";
 import ChatViewComponent from "../chatView";
 import ChatTextBoxComponent from "../chatTextBox";
+import NewChatComponent from "../newChat";
 import { Button, withStyles } from "@material-ui/core";
 import styles from "./styles";
 
@@ -49,6 +50,8 @@ class DashboardComponent extends React.Component {
             null
         }
 
+        {newChatFormVisible ? <NewChatComponent goToChatFn={this.goToChat} newChatSubmitFn={this.newChatSubmit} /> : null}
+
         <Button onClick={this.signOut} className={classes.signOutBtn}>
           Sign Out
         </Button>
@@ -59,7 +62,7 @@ class DashboardComponent extends React.Component {
   signOut = () => firebase.auth().signOut();
 
   selectChat = async (chatIndex) => {
-    await this.setState({ selectedChat: chatIndex })
+    await this.setState({ selectedChat: chatIndex, newChatFormVisible: false });
     this.messageRead();
   }
 
@@ -99,6 +102,33 @@ class DashboardComponent extends React.Component {
     } else {
       console.log("Clicked message where the user was the sender");
     }
+  }
+
+  goToChat = async (docKey, msg) => {
+    const usersInChat = docKey.split(":");
+    const chat = this.state.chats.find(_chat => usersInChat.every(_user => _chat.users.includes(_user)));
+    this.setState({ newChatFormVisible: false });
+    await this.selectChat( this.state.chats.indexOf(chat));
+    this.submitMessage(msg);
+  }
+
+  newChatSubmit = async (chatObj) => {
+    const docKey = this.buildDocKey(chatObj.sendTo);
+    await firebase
+      .firestore()
+      .collection("chats")
+      .doc(docKey)
+      .set({
+        messages: [{
+          message: chatObj.message,
+          sender: this.state.email
+        }],
+        receiverHasRead: false,
+        users: [this.state.email, chatObj.sendTo]
+      })
+
+    this.setState({ newChatFormVisible: false });
+    this.selectChat(this.state.chats.length - 1);
   }
 
   clickedChatWhereNotSender = (chatIndex) => this.state.chats[chatIndex].messages[this.state.chats[chatIndex].messages.length - 1].sender !== this.state.email;
